@@ -25,5 +25,5 @@ proto/
 
 # IDE
 .idea/
-
+.env
 dist/
