@@ -19,21 +19,19 @@ services:
     restart: unless-stopped
     ports:
       - "7880:7880"
-      # TURN server ports
-      - "3478:3478/udp" # TURN UDP
-      - "5349:5349/tcp" # TURN TLS
-      # Port range for media relay (adjust as needed)
-      - "30000-40000:30000-40000/udp"
+      # TURN ports removed - using external TURN server
     environment:
       LIVEKIT_KEYS: "${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}"
       LIVEKIT_REDIS_ADDRESS: ${REDIS_ADDRESS}
-      LIVEKIT_PORT: "7880"
-      LIVEKIT_LOGGING_LEVEL: "info"
-      # TURN Server Configuration
-      LIVEKIT_TURN_ENABLED: "true"
-      LIVEKIT_TURN_DOMAIN: "turn.dahopevi.com"
-      LIVEKIT_TURN_UDP_PORT: "3478"
-      LIVEKIT_TURN_TLS_PORT: "5349"
+      LIVEKIT_PORT: "${LIVEKIT_PORT}"
+      LIVEKIT_LOGGING_LEVEL: "${LOG_LEVEL}"
+      # External TURN server configuration from .env
+      LIVEKIT_RTC_TURN_SERVERS: |
+        - host: turn.etugrand.com
+          port: ${TURN_UDP_PORT}
+          protocol: udp
+          username: ${TURN_USERNAME}
+          credential: ${TURN_PASSWORD}
     depends_on:
       redis:
         condition: service_healthy
