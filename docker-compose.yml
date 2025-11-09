@@ -21,9 +21,6 @@ services:
     ports:
       - "7880:7880"
       - "7881:7881/tcp"
-      - "3478:3478/udp"
-      - "3478:3478/tcp"
-      - "5349:5349/tcp"
       - "50000-50100:50000-50100/udp"
     environment:
       LIVEKIT_KEYS: "${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}"
@@ -34,10 +31,7 @@ services:
       LIVEKIT_RTC_PORT_RANGE_START: "50000"
       LIVEKIT_RTC_PORT_RANGE_END: "50100"
       LIVEKIT_RTC_USE_EXTERNAL_IP: "true"
-      LIVEKIT_TURN_ENABLED: "true"
-      LIVEKIT_TURN_DOMAIN: "${LIVEKIT_DOMAIN}"
-      LIVEKIT_TURN_UDP_PORT: "3478"
-      LIVEKIT_TURN_TLS_PORT: "5349"
+      LIVEKIT_TURN_ENABLED: "false"
       LIVEKIT_RTC_TURN_SERVERS: '[{"host": "${TURN_SERVER_HOST}", "port": ${TURN_UDP_PORT}, "protocol": "udp", "username": "${TURN_USERNAME}", "credential": "${TURN_PASSWORD}"}, {"host": "${TURN_SERVER_HOST}", "port": ${TURN_TCP_PORT}, "protocol": "tcp", "username": "${TURN_USERNAME}", "credential": "${TURN_PASSWORD}"}, {"host": "${TURN_SERVER_HOST}", "port": ${TURN_TLS_PORT}, "protocol": "tcp", "username": "${TURN_USERNAME}", "credential": "${TURN_PASSWORD}"}]'
     depends_on:
       redis:
