@@ -6,55 +6,48 @@ services:
     restart: unless-stopped
     volumes:
       - redis_data:/data
-    networks:
-      - livekit-network
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 30s
       timeout: 10s
       retries: 3
+    command: redis-server --appendonly yes
 
   livekit:
-    image: livekit/livekit-server:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     restart: unless-stopped
     ports:
       - "7880:7880"
-      # TURN ports removed - using external TURN server
+      - "7881:7881/tcp"
+      - "3478:3478/udp"
+      - "3478:3478/tcp"
+      - "5349:5349/tcp"
+      - "50000-50100:50000-50100/udp"
     environment:
       LIVEKIT_KEYS: "${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}"
-      LIVEKIT_REDIS_ADDRESS: ${REDIS_ADDRESS}
-      LIVEKIT_PORT: "${LIVEKIT_PORT}"
+      LIVEKIT_REDIS_ADDRESS: redis:6379
+      LIVEKIT_PORT: "7880"
+      LIVEKIT_RTC_TCP_PORT: "7881"
       LIVEKIT_LOGGING_LEVEL: "${LOG_LEVEL}"
-      # External TURN server configuration from .env
-      LIVEKIT_RTC_TURN_SERVERS: |
-        - host: turn.etugrand.com
-          port: ${TURN_UDP_PORT}
-          protocol: udp
-          username: ${TURN_USERNAME}
-          credential: ${TURN_PASSWORD}
+      LIVEKIT_RTC_PORT_RANGE_START: "50000"
+      LIVEKIT_RTC_PORT_RANGE_END: "50100"
+      LIVEKIT_RTC_USE_EXTERNAL_IP: "true"
+      LIVEKIT_TURN_ENABLED: "true"
+      LIVEKIT_TURN_DOMAIN: "${LIVEKIT_DOMAIN}"
+      LIVEKIT_TURN_UDP_PORT: "3478"
+      LIVEKIT_TURN_TLS_PORT: "5349"
+      LIVEKIT_RTC_TURN_SERVERS: '[{"host": "${TURN_SERVER_HOST}", "port": ${TURN_UDP_PORT}, "protocol": "udp", "username": "${TURN_USERNAME}", "credential": "${TURN_PASSWORD}"}, {"host": "${TURN_SERVER_HOST}", "port": ${TURN_UDP_PORT}, "protocol": "tcp", "username": "${TURN_USERNAME}", "credential": "${TURN_PASSWORD}"}, {"host": "${TURN_SERVER_HOST}", "port": ${TURN_TLS_PORT}, "protocol": "tcp", "username": "${TURN_USERNAME}", "credential": "${TURN_PASSWORD}"}, {"host": "${TURN_RELAY_HOST}", "port": ${TURN_RELAY_UDP_PORT}, "protocol": "udp", "username": "${TURN_RELAY_USERNAME}", "credential": "${TURN_RELAY_PASSWORD}"}, {"host": "${TURN_RELAY_HOST}", "port": ${TURN_RELAY_TCP_PORT}, "protocol": "tcp", "username": "${TURN_RELAY_USERNAME}", "credential": "${TURN_RELAY_PASSWORD}"}, {"host": "${TURN_RELAY_HOST}", "port": ${TURN_RELAY_TLS_PORT}, "protocol": "tcp", "username": "${TURN_RELAY_USERNAME}", "credential": "${TURN_RELAY_PASSWORD}"}]'
     depends_on:
       redis:
         condition: service_healthy
-    networks:
-      - livekit-network
     healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--no-verbose",
-          "--tries=1",
-          "--spider",
-          "http://localhost:7880/health",
-        ]
+      test: ["CMD", "sh", "-c", "nc -z localhost 7880 && echo 'OK'"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
-
-networks:
-  livekit-network:
-    driver: bridge
 
 volumes:
   redis_data:
