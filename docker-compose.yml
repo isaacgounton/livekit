@@ -38,7 +38,7 @@ services:
       LIVEKIT_TURN_DOMAIN: "${LIVEKIT_DOMAIN}"
       LIVEKIT_TURN_UDP_PORT: "3478"
       LIVEKIT_TURN_TLS_PORT: "5349"
-      LIVEKIT_RTC_TURN_SERVERS: '[{"host": "${TURN_SERVER_HOST}", "port": ${TURN_UDP_PORT}, "protocol": "udp", "username": "${TURN_USERNAME}", "credential": "${TURN_PASSWORD}"}, {"host": "${TURN_SERVER_HOST}", "port": ${TURN_UDP_PORT}, "protocol": "tcp", "username": "${TURN_USERNAME}", "credential": "${TURN_PASSWORD}"}, {"host": "${TURN_SERVER_HOST}", "port": ${TURN_TLS_PORT}, "protocol": "tcp", "username": "${TURN_USERNAME}", "credential": "${TURN_PASSWORD}"}, {"host": "${TURN_RELAY_HOST}", "port": ${TURN_RELAY_UDP_PORT}, "protocol": "udp", "username": "${TURN_RELAY_USERNAME}", "credential": "${TURN_RELAY_PASSWORD}"}, {"host": "${TURN_RELAY_HOST}", "port": ${TURN_RELAY_TCP_PORT}, "protocol": "tcp", "username": "${TURN_RELAY_USERNAME}", "credential": "${TURN_RELAY_PASSWORD}"}, {"host": "${TURN_RELAY_HOST}", "port": ${TURN_RELAY_TLS_PORT}, "protocol": "tcp", "username": "${TURN_RELAY_USERNAME}", "credential": "${TURN_RELAY_PASSWORD}"}]'
+      LIVEKIT_RTC_TURN_SERVERS: '[{"host": "${TURN_SERVER_HOST}", "port": ${TURN_UDP_PORT}, "protocol": "udp", "username": "${TURN_USERNAME}", "credential": "${TURN_PASSWORD}"}, {"host": "${TURN_SERVER_HOST}", "port": ${TURN_TCP_PORT}, "protocol": "tcp", "username": "${TURN_USERNAME}", "credential": "${TURN_PASSWORD}"}, {"host": "${TURN_SERVER_HOST}", "port": ${TURN_TLS_PORT}, "protocol": "tcp", "username": "${TURN_USERNAME}", "credential": "${TURN_PASSWORD}"}]'
     depends_on:
       redis:
         condition: service_healthy
